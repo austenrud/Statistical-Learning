@@ -13,31 +13,29 @@
 // #include <gtkmm/window.h>
 // #include <gtkmm/drawingarea.h>
 
-struct point // struct are classes that are all public
+struct point
 {
     static int d;
-    static int i;
     double *coords;
-    double *q;
-    int label;
-    double sum;
-// constructor - a constructor initializes data members
-    point(){
-        this->coords = new double[d];
-        //this->q = new double[d];
-        this->label = 0;
-        this->sum = 0;
-        coords = { 0 }; // all elements 0
-        q = { 0 }; // all elements 0
+
+    point() //init
+    {
+        //this->coords = new double[d]; // The original
+
+        this->coords = new double[d](); //This works, because fancy c++ magic
+
+
+        //this->coords[d] = { 0 };   // First attempt, it either does nothing or fill the array with junk
     }
-    ~point() {}// destructor
 
-
-
+    ~point()  //destructor
+    {
+        delete[] coords; // Added this to hopefully remove the array once the point class/object is gone
+    }
 
     void print()
     {
-        for (size_t i = d; i > 0; i--)
+        for (size_t i = d-1; i > 0; i--)   // changed "i = d" to "i = d-1"
             std::cout << coords[i] << " ";
         std::cout << coords[0];
     }
