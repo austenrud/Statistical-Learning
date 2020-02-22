@@ -9,14 +9,14 @@
 #include <string>
 #include <vector>  // for vector distance calcs
 
-// #include <gtkmm/application.h>
-// #include <gtkmm/window.h>
-// #include <gtkmm/drawingarea.h>
-
+// #include <gtkmm/application.h> // These items are for the graphical representation
+// #include <gtkmm/window.h>    // These items are for the graphical representation
+// #include <gtkmm/drawingarea.h>    // These items are for the graphical representation
 struct point
 {
     static int d;
     double *coords;
+    int label;
 
     point() //init
     {
@@ -24,7 +24,7 @@ struct point
 
         this->coords = new double[d](); //This works, because fancy c++ magic
 
-
+        this->label = 0;  // This is used later in the program for a purpose not yet understood
         //this->coords[d] = { 0 };   // First attempt, it either does nothing or fill the array with junk
     }
 
@@ -40,38 +40,45 @@ struct point
         std::cout << coords[0];
     }
 
-
-// a member function double dist(point &q) that takes a reference to a second point and
-// returns the Euclidean distance of the current point to the point q
+    // a member function double dist(point &q) that takes a reference to a second point and
+    // returns the Euclidean distance of the current point to the point q
+/*
     double dist(point &q)
     {
-        int i;
-        //if (point.size() != q.size())
-        //    throw std::domain_error("vector subtraction must have equal length vectors");
-        for (size_t i = d; i >= 0; i--)
-            std::cout << coords[i];
-            std::cout << point::q[i];
-            sum += pow(coords[i]-point::q[i],2);
+        double Sum;
+        double distance;
+        point array1;
+        for (size_t i = d-1; i > 0; i--)   // changed "i = d" to "i = d-1"
+        {
+            std::cout<<"Enter value of first coordinate";
+            std::cin >> array1[i];
+            std::cout<<"Enter value of second coordinate";
+            std::cin >> q[i];
 
-        return sqrt(sum);
-    }
+            Sum += pow((array1[i]-q[i]),2.0);
+            distance = sqrt(Sum);
+        }
+        std::cout << "DISTANCE: " << distance;   //
+        return distance;
+    } */
 };
+
+int point::d = 4;  // Set this to 4 so I can see what prints, less imagining this way (only for testing).
+
 
 int main() {
 
-    std::string str1 = "To be or not to be, that is the question";
-    std::string str2 = "only ";
-    std::string str3 = str1.substr(6, 12);
-    str1.insert(32, str2);
-    str1.replace(str1.find("to be", 0), 5, "to jump");
-    str1.erase(9, 4);
-    std::cout << str1 << std::endl;
-    for(int i = 0; i < str3.length(); i++)
-        std::cout << str3[i] << std::endl;
+
+    point p;
+
+    p.print();
+
+    std::cout << "\n";
+
+    system("pause");
     return 0;
 }
-/*
-int point::d;
+
 
 class cloud
 {
@@ -379,7 +386,7 @@ void test_init_random_partition()
     assert(std::fabs(cnt/(double)K - prob_threepoints) < delta);
 
     std::cout << "\t[OK]" << std::endl;
-}*/
+}
 // for graphical interface
 /*
 // for graphical interface
