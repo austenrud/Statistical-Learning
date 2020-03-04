@@ -9,10 +9,9 @@
 #include <string>
 #include <vector>  // for vector distance calcs
 
-
-//#include <gtkmm/application.h> // These items are for the graphical representation
-//#include <gtkmm/window.h>    // These items are for the graphical representation
-//#include <gtkmm/drawingarea.h>    // These items are for the graphical representation
+#include <gtkmm/application.h> // These items are for the graphical representation
+#include <gtkmm/window.h>    // These items are for the graphical representation
+#include <gtkmm/drawingarea.h>    // These items are for the graphical representation
 struct point
 {
 	static int d;
@@ -21,12 +20,11 @@ struct point
 
 	point() //init
 	{
-		//this->coords = new double[d]; // The original
 
 		this->coords = new double[d](); //This works, because fancy c++ magic
 
 		this->label = 0;  // This is used later in the program for a purpose not yet understood
-		//this->coords[d] = { 0 };   // First attempt, it either does nothing or fill the array with junk
+
 	}
 
 
@@ -56,19 +54,11 @@ struct point
 	double dist(point &q)
 	{
 		double Sum = 0.0;
-		//double distance;
-		for (size_t i = d - 1; i > 0; i--)   // changed "i = d" to "i = d-1"
+		for (size_t i = d - 1; i > 0; i--)  
 		{
-			/*std::cout << "Enter value of first coordinate";
-			std::cin >> array1[i];
-			std::cout << "Enter value of second coordinate";
-			std::cin >> q[i];*/
-			//Sum += pow((array1[i] - q[i]), 2.0);
 			Sum += pow((coords[i] - q.coords[i]), 2.0);
 		}
 		return sqrt(Sum);
-		//std::cout << "DISTANCE: " << distance;   //
-		//return distance;
 	}
 };
 
@@ -189,11 +179,77 @@ public:
 	void set_voronoi_labels()
 	{
 		// TODO
+		double centroid = 0.0;
+		double p = 0.0;
+		for (int i = 0; i < nmax; i++)
+		{
+			p += points[i].coords[0] + points[i].coords[1] + points[i].coords[2] + points[i].coords[3];
+		}
+		centroid = p / nmax;
+
+		for (int i = 0; i < nmax; i++)
+		{
+			double current_min = abs(points[0].coords[0] - centroid);
+			for (int j = 0; j < d; j++)
+			{
+				double dist = abs(points[i].coords[j] - centroid);
+				if (dist <= current_min)
+					current_min = dist;
+			}
+			points[i].label = current_min;
+		}
 	}
 
 	void set_centroid_centers()
 	{
-		// TODO
+		// TODO These for loops arecopy pasted from github https://github.com/marcoscastro/kmeans/blob/master/kmeans.cpp
+		// recalculating the center of each cluster
+
+
+		//I'M not sure if this is correct but currently I have this setup to find the centers of each flower/label
+		//!!!!!  The results look the same beacuse there are 50 of each and it cutts off decimals, I think the math is sound  !!!!!
+
+		//Outer loop goes through each of the k (3 in this case) centers that are in each centroid (aka the three flower types)
+		for (int j = 0; j < k; j++)
+		{
+
+		//Initialize the totals to zero
+		double total_first_cords = 0;
+		double total_second_cords = 0;
+		double total_third_cords = 0;
+		double total_fourth_cords = 0;
+		double totalPointsInGroup = 0; // originallyI didn't have this as I was using the nmax
+
+			//Inner loop adds up each individual coord 
+			for (int i = 0; i < nmax; i++)
+			{
+				if (points[i].label == j) // I originally Did not have this IF statment, its not needed if you don't want to check the label / flower type
+				{
+					total_first_cords += points[i].coords[0];
+					total_second_cords += points[i].coords[1];
+					total_third_cords += points[i].coords[2];
+					total_fourth_cords += points[i].coords[3];
+					totalPointsInGroup++;
+				}
+			}
+
+			//Creating a new point to be the center point getting set
+			//Setting each of the d (4 in this case) coordinates to the total divided by the number of points
+			point centroidCenterPoint;
+			centroidCenterPoint.coords[0] = total_first_cords / totalPointsInGroup; //I originally had this divide by nmax
+			centroidCenterPoint.coords[1] = total_second_cords / totalPointsInGroup;
+			centroidCenterPoint.coords[2] = total_third_cords / totalPointsInGroup;
+			centroidCenterPoint.coords[3] = total_fourth_cords / totalPointsInGroup;
+
+			//Prints to make sure the math was working (seems a little off)
+			//These are a bit easier to read if you make the 5 totals integers instead of doubles, but the math will be worse.
+			std::cout << total_first_cords << "/" << totalPointsInGroup << " = " << centroidCenterPoint.coords[0] << " | ";
+			std::cout << total_second_cords << "/" << totalPointsInGroup << " = " << centroidCenterPoint.coords[1] << " | ";
+			std::cout << total_third_cords << "/" << totalPointsInGroup << " = " << centroidCenterPoint.coords[2] << " | ";
+			std::cout << total_fourth_cords << "/" << totalPointsInGroup << " = " << centroidCenterPoint.coords[3] << " | \n";
+			// J is now the specific center we are setting, aka which flower type 0,1,2
+			set_center(centroidCenterPoint, j);
+		}
 	}
 
 	void kmeans()
@@ -410,7 +466,7 @@ void test_init_random_partition()
 	std::cout << "\t[OK]" << std::endl;
 }
 // for graphical interface
-/*
+
 // for graphical interface
 class MyArea : public Gtk::DrawingArea
 {
@@ -426,7 +482,7 @@ protected:
 	//Override default signal handler:
 	bool on_draw(const Cairo::RefPtr<Cairo::Context> &cr) override;
 };
-*/
+
 int main(int argc, char **argv)
 {//
 	srand(time(NULL));
@@ -471,17 +527,19 @@ int main(int argc, char **argv)
 	c.kmeans();
 	std::cout << "Intracluster variance after k-means: " << c.intracluster_variance() << std::endl;
 	// launch graphical interface
-	/*Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv, "inf442.td3");
+	Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv, "inf442.td3");
 	Gtk::Window win;
 	win.set_title("TD 3");
 	win.set_default_size(400, 400);
 	MyArea area(&c);
 	win.add(area);
 	area.show();
-	return app->run(win);*/
+	//------------------------------------------------------------------COMMENTED THIS OPUT BEACUSE IT GTK DOESN'T WORK YET
+	//return app->run(win);
+	
 
 	//TODO: REMOVE, random testing to make sure we can access the dataset and print----------------------------------------------------
-	point qpoint(0.0, 0.0, 0.0, 0.0);
+	point qpoint(5.0, 5.0, 5.0, 5.0);
 	for (int i = 0; i < nmax; i++)  // Testing the pointCLoud array
 	{
 		std::cout << "Point " << i << ": ";
@@ -490,11 +548,25 @@ int main(int argc, char **argv)
 		std::cout << "  Distance: " << c.get_point(i).dist(qpoint);
 		std::cout << "\n";
 	}
+	//--------------------------------------------------------------------------------!!!!!!!!!!!!!!!!!!!!---------------NEW-----------------------!!!!!!!!!!!!!!!!!!!!!!!!!
+	// This is how you can set an indvidual center for the cluster
+	// Set_Center rquire you give it one pointer object and one integer, so i gave it my qpoint pointer and int 1, which mean sit will set the point qpoint to the center posion 2 (2 beacuse there are three total and it starts coutning at 0, so 1 is the second)
+	// The cluster had three centers beacuse the varible "k" is hardcoded to 3. I'm guessing this is due to the three labels / three colors / three flower types
+
+	//c.set_center(qpoint, 1);    //THIS is an example of how you can call the set_center function. Give it a point object and a number. You can either make a new point object like i did with qpoint or (more likly) use one from a point cloud or other array
+
+	//This is calling the set centroid function but is not needed beacuse it is also done in kmeans function labeled as "trivial initialization" so not sure if that stays there or not.
+	c.set_centroid_centers();
+	//I print them like this because the cluster has k centers (3 in this case) and each center has four coordinates
+	std::cout << "\nCenters: " << c.get_center(0).coords[0] << "," << c.get_center(0).coords[1] << "," << c.get_center(0).coords[2] << "," << c.get_center(0).coords[3];
+	std::cout << "  |  " << c.get_center(1).coords[0] << "," << c.get_center(1).coords[1] << "," << c.get_center(1).coords[2] << "," << c.get_center(1).coords[3];
+	std::cout << "  |  " << c.get_center(2).coords[0] << "," << c.get_center(2).coords[1] << "," << c.get_center(2).coords[2] << "," << c.get_center(2).coords[3];
+	std::cout << "\n";
 
 	system("pause"); //so the popup display doesn't close instantly
 	//-----------------------------------------------------------------------------------------------------------------------------------
 }
-/*
+
 bool MyArea::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
 {
 	Gtk::Allocation allocation = get_allocation();
@@ -523,7 +595,7 @@ bool MyArea::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
 	for(int i = 0; i < c->get_n(); i++)
 	{
 		cr->save(); // save current drawing context (opaque black)
-		cr->arc((c->get_point(i).coords[x_coord]-x_min)*width/(x_max-x_min), (c->get_point(i).coords[y_coord]-y_min)*height/(y_max-y_min), 10.0, 0.0, 2.0 * M_PI); // full circle
+		cr->arc((c->get_point(i).coords[x_coord] - x_min)*width / (x_max - x_min), (c->get_point(i).coords[y_coord] - y_min)*height / (y_max - y_min), 10.0, 0.0, 2.0 * 3.14);// M_PI); // full circle
 		// choose color depending on label
 		switch(c->get_point(i).label)
 		{
@@ -546,4 +618,3 @@ bool MyArea::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
 	}
 	return true;
 }
-*/
