@@ -12,18 +12,19 @@
 #include <gtkmm/application.h> // These items are for the graphical representation
 #include <gtkmm/window.h>    // These items are for the graphical representation
 #include <gtkmm/drawingarea.h>    // These items are for the graphical representation
+
 struct point
 {
 	static int d;
 	double *coords;
 	int label;
 
-	point() //init
+	point() // our empty constructor
 	{
 
-		this->coords = new double[d](); //This works, because fancy c++ magic
+		this->coords = new double[d]();
 
-		this->label = 0;  // This is used later in the program for a purpose not yet understood
+		this->label = 0;  // Label will help us determine which cluster/flower type we are in
 
 	}
 
@@ -39,7 +40,7 @@ struct point
 
 	~point()  //destructor
 	{
-		delete[] coords; // Added this to hopefully remove the array once the point class/object is gone
+		delete[] coords; // To remove the array once the point class/object is gone
 	}
 
 	void print()
@@ -49,12 +50,10 @@ struct point
 		std::cout << coords[0];
 	}
 
-	// a member function double dist(point &q) that takes a reference to a second point and
-	// returns the Euclidean distance of the current point to the point q
 	double dist(point &q)
 	{
 		double Sum = 0.0;
-		for (size_t i = d - 1; i > 0; i--)  
+		for (size_t i = d - 1; i > 0; i--)
 		{
 			Sum += pow((coords[i] - q.coords[i]), 2.0);
 		}
@@ -89,7 +88,7 @@ int point::d = 4;  // Set this to 4 so I can see what prints, less imagining thi
 
 	system("pause"); //so the popup display doesn't close instantly
 	return 0;
-}*/
+}*/  // This is a testing int main function
 
 
 class cloud
@@ -170,11 +169,150 @@ public:
 			centers[j].coords[m] = p.coords[m];
 	}
 
-	double intracluster_variance()
-	{
+	double intracluster_variance() {
+
+		/*
 		// TODO
-		return 0.0;
+		//Outer loop goes through each of the k (3 in this case) centers that are in each centroid (aka the three flower types)
+		// now that we have the means added, we can create a loop to get variance -- moving to outside of loop to use for printing
+		double var_first_cords = 0;
+		double var_second_cords = 0;
+		double var_third_cords = 0;
+		double var_fourth_cords = 0;
+
+		for (int j = 0; j < k; j++) {
+
+			//Initialize the totals to zero
+			double total_first_cords = 0;
+			double total_second_cords = 0;
+			double total_third_cords = 0;
+			double total_fourth_cords = 0;
+			double totalPointsInGroup = 0; // originallyI didn't have this as I was using the nmax
+			// --AR I don't understand if we can use the  last double usage for intracluster var but leaving for now
+
+			//Inner loop adds up each individual coord
+			for (int i = 0; i < nmax; i++) {
+				if (points[i].label == j) // I originally Did not have this IF statment, its not needed
+					// if you don't want to check the label / flower type
+				{
+					total_first_cords += points[i].coords[0];
+					total_second_cords += points[i].coords[1];
+					total_third_cords += points[i].coords[2];
+					total_fourth_cords += points[i].coords[3];
+					totalPointsInGroup++;
+				}
+			}
+			// creating mean values...
+			double mean_first_cords = total_first_cords / nmax;
+			double mean_second_cords = total_second_cords / nmax;
+			double mean_third_cords = total_third_cords / nmax;
+			double mean_fourth_cords = total_fourth_cords / nmax;
+			std::cout << " Our center/mean point for the entire data set is (" << mean_first_cords << ", " <<
+				mean_second_cords << ", " << mean_third_cords << ", " << mean_fourth_cords << ") \n";
+			std::cout << "There are " << nmax << " points within cluster " << j << ".\n";
+			// This mean looks approximately correct based on what is in iris.data
+			// --- It's taking all data points for each cluster cycle in the output (i.e. 150 for each)
+
+			for (int i = 0; i < nmax; i++) {  // this is sum(xi - xbar)^2 for each coordinate
+				if (points[i].label == j) {
+					var_first_cords += pow((points[i].coords[0] - mean_first_cords), 2.0);
+					var_second_cords += pow((points[i].coords[1] - mean_second_cords), 2.0);
+					var_third_cords += pow((points[i].coords[2] - mean_third_cords), 2.0);
+					var_fourth_cords += pow((points[i].coords[3] - mean_fourth_cords), 2.0);
+				}
+			}
+			double variance_cord1 = var_first_cords / 150;
+			double variance_cord2 = var_second_cords / 150;
+			double variance_cord3 = var_third_cords / 150;
+			double variance_cord4 = var_fourth_cords / 150;
+
+			double sum = var_first_cords + var_second_cords + var_third_cords + var_fourth_cords;
+			double variancetotal = (sum / 149); // trying 149 and 150...
+
+			double variance_total2 = variance_cord1 + variance_cord2 + variance_cord3 + variance_cord4;
+			std::cout << "Sum " << sum << " \n";
+			std::cout << "Variance Total " << variancetotal << "\n\n";
+
+			std::cout << "Alternative variance total " << variance_total2 << "\n\n";
+
+
+			// ---!!! intracluster variance of the point cloud of the Iris data set is equal to 63.5747.
+			// Here we are getting 61.3523??
+			// Now that for each k we have our individual coords added, we should be able to calculate the variance
+			//
+			 // You can test your function via the function test_intracluster_variance(), which is called at
+			 // the start of the main function. Before running the k-means algorithm, the intracluster variance of
+			 // the point cloud of the Iris data set is equal to 63.5747. Use this number to further validate
+			 // your implementation.
+		}
+		
+
+		for (int j = 0; j < k; j++) {
+			std::cout << "(" << var_first_cords << ", " << var_second_cords << ", " << var_third_cords << ", " << var_fourth_cords << ") \n";
+		}
+		*/
+		//----------------------------------------------------------------------------------------starting fresh below here for now-----------------------------------------------------------------------------
+		// my idea is to first loop through the clusters, than loop the points. in each point add to the sum, the distance this point is from the current cluster's center
+		// then divide by the nmax? not sure why
+		// I thought the formula on the website below would help, it seemed to help make sense of whats happening but its not the same as the one on the project pdf, so maybe thats no use...
+		// https://www.saedsayad.com/clustering_kmeans.htm
+
+		double sum = 0;
+
+		for (int j = 0; j < k; j++)
+		{
+			double total_first_cords = 0;
+			double total_second_cords = 0;
+			double total_third_cords = 0;
+			double total_fourth_cords = 0;
+			for (int i = 0; i < nmax; i++)
+			{
+				/*total_first_cords  += pow((points[i].coords[0] - centers[j].coords[0]), 2.0);
+				total_second_cords += pow((points[i].coords[1] - centers[j].coords[1]), 2.0);
+				total_third_cords  += pow((points[i].coords[2] - centers[j].coords[2]), 2.0);
+				total_fourth_cords += pow((points[i].coords[3] - centers[j].coords[3]), 2.0);
+				
+				std::cout << "fourth: " << points[i].coords[1] << " - " << centers[j].coords[1];*/
+
+				/*sum += pow(sqrt(pow((points[i].coords[0] - centers[j].coords[0]), 2.0) +
+					   pow((points[i].coords[1] - centers[j].coords[1]), 2.0) +
+					   pow((points[i].coords[2] - centers[j].coords[2]), 2.0) +
+					   pow((points[i].coords[3] - centers[j].coords[3]), 2.0)), 2);*/
+
+				// This is just a fancy/dynamic way to add up the power of the diffrences of each point, the loop allows the number of demensions to change, which is needed for the tests ----
+				for (int m = 0; m < d; m++)
+				{
+					sum += pow((points[i].coords[m] - centers[j].coords[m]), 2.0);
+				}
+				//sum = pow(sqrt(sum), 2);
+				//sum = sqrt(sum);       <--------------------------------------Pretty sure i need to square root to be getting distances
+
+				/*sum += pow(sqrt( pow((points[i].coords[0] - centers[j].coords[0]), 2.0) +
+					         pow((points[i].coords[1] - centers[j].coords[1]), 2.0) +
+					         pow((points[i].coords[2] - centers[j].coords[2]), 2.0) +
+					         pow((points[i].coords[3] - centers[j].coords[3]), 2.0)), 2);
+				*/
+
+				//total_first_cords += points[i].dist(centers[j]);
+				//total_second_cords += points[i].dist(centers[j]);
+				//total_third_cords += points[i].dist(centers[j]);
+				//total_fourth_cords += points[i].dist(centers[j]);
+
+				//std::cout << "\ndistper point: " << points[i].dist(centers[j]);
+
+				//sum += points[i].dist(centers[j]);
+
+					
+			}
+				/*sum += pow(sqrt(total_first_cords +
+					total_second_cords +
+					total_third_cords +
+					total_fourth_cords), 2);*/
+		}
+		std::cout << "\nsum: " << sum << " / " << nmax << " = " << sum / nmax << "\n";  // comment this out to see tests better ---
+		return sum / nmax;    //<------------------------this is suppose to be the 1/n in the formula, not sure if thats right
 	}
+
 
 	void set_voronoi_labels()
 	{
@@ -213,15 +351,16 @@ public:
 		for (int j = 0; j < k; j++)
 		{
 
-		//Initialize the totals to zero
-		double total_first_cords = 0;
-		double total_second_cords = 0;
-		double total_third_cords = 0;
-		double total_fourth_cords = 0;
-		double totalPointsInGroup = 0; // originallyI didn't have this as I was using the nmax
+			//Initialize the totals to zero
+			double total_first_cords = 0;
+			double total_second_cords = 0;
+			double total_third_cords = 0;
+			double total_fourth_cords = 0;
+			double totalPointsInGroup = 0; // originallyI didn't have this as I was using the nmax
 
-			//Inner loop adds up each individual coord 
-			for (int i = 0; i < nmax; i++)
+			//Inner loop adds up each individual coord
+			for (int i = 0; i < nmax; i++) // AR should we have nmax/k as nmax is 150,? I'm not sure how it would discount
+				// points already used, however
 			{
 				if (points[i].label == j) // I originally Did not have this IF statment, its not needed if you don't want to check the label / flower type
 				{
@@ -291,20 +430,25 @@ void test_intracluster_variance()
 	std::cout << "Testing function intracluster_variance()...";
 
 	// test case 1
+	std::cout << "\n--------TEST 1---------\n";
 	const double dist_onepoint_zerodist = 0.0;
 	cloud onepoint_zerodist(1, 1, 1);
 	p.coords[0] = 0.0;
 	onepoint_zerodist.add_point(p, 0);
+	std::cout << "\nTest: " << onepoint_zerodist.intracluster_variance() << " - " << dist_onepoint_zerodist << " = " << onepoint_zerodist.intracluster_variance() - dist_onepoint_zerodist << " < " << eps << "\n";
 	assert(std::fabs(onepoint_zerodist.intracluster_variance() - dist_onepoint_zerodist) < eps);
 
 	// test case 2
+	std::cout << "\n--------TEST 2---------\n";
 	const double dist_onepoint_posdist = 0.25;
 	cloud onepoint_posdist(1, 1, 1);
 	p.coords[0] = 0.5;
 	onepoint_posdist.add_point(p, 0);
+	std::cout << "\nTest: " << onepoint_posdist.intracluster_variance() << " - " << dist_onepoint_posdist << " = " << onepoint_posdist.intracluster_variance() - dist_onepoint_posdist << " < " << eps << "\n";
 	assert(std::fabs(onepoint_posdist.intracluster_variance() - dist_onepoint_posdist) < eps);
 
 	// test case 3
+	std::cout << "\n--------TEST 3---------\n";
 	const double dist_twopoints = 0.625;
 	cloud twopoints(1, 2, 1);
 	p.coords[0] = -1.0;
@@ -313,9 +457,11 @@ void test_intracluster_variance()
 	twopoints.add_point(p, 0);
 	p.coords[0] = -0.5;
 	twopoints.set_center(p, 0);
+	std::cout << "\nTest: " << twopoints.intracluster_variance() << " - " << dist_twopoints << " = " << twopoints.intracluster_variance() - dist_twopoints << " < " << eps << "\n";
 	assert(std::fabs(twopoints.intracluster_variance() - dist_twopoints) < eps);
 
 	// test case 4
+	std::cout << "\n--------TEST 4---------\n";
 	const double dist_twoclusters = 6.8125;
 	cloud twoclusters(1, 4, 2);
 	p.coords[0] = -1.0;
@@ -330,6 +476,7 @@ void test_intracluster_variance()
 	twoclusters.add_point(p, 1);
 	p.coords[0] = -3.0;
 	twoclusters.set_center(p, 1);
+	std::cout << "\nTest: " << twoclusters.intracluster_variance() << " - " << dist_twoclusters << " = " << twoclusters.intracluster_variance() - dist_twoclusters << " < " << eps << "\n";
 	assert(std::fabs(twoclusters.intracluster_variance() - dist_twoclusters) < eps);
 
 	std::cout << "\t\t[OK]" << std::endl;
@@ -488,14 +635,15 @@ int main(int argc, char **argv)
 	srand(time(NULL));
 	point::d = 4;
 	// TODO: your tests for the point class here
-	//test_intracluster_variance();
+	test_intracluster_variance();
 	//test_kmeans();
 	// test_init_forgy();
 	// test_init_plusplus();
 	// test_init_random_partition();
 	const int d = 4;
 	const int nmax = 150;
-	const int k = 3;
+	const int k = 1; // If we change this value to 1 we can validate the center/mean point for the data set
+	// (5.84333, 3.054, 3.75867, 1.19867) - this output is confirmed using excel
 	// construct point cloud
 	cloud c(d, nmax, k);
 	// open data file
@@ -506,10 +654,10 @@ int main(int argc, char **argv)
 	// labels to cycle through
 	int label = 0;
 	// while not at end of file
-	while(is.peek() != EOF)
+	while (is.peek() != EOF)
 	{
 		// read new points
-		for(int m = 0; m < d; m++)
+		for (int m = 0; m < d; m++)
 		{
 			is >> p.coords[m];
 		}
@@ -523,10 +671,13 @@ int main(int argc, char **argv)
 		is.get();
 	}
 	// execute k-means algorithm
-	std::cout << "Intracluster variance before k-means: " << c.intracluster_variance() << std::endl;
+	std::cout << "Intracluster variance before k-means: \n" << c.intracluster_variance() << std::endl;
 	c.kmeans();
-	std::cout << "Intracluster variance after k-means: " << c.intracluster_variance() << std::endl;
+	std::cout << "Intracluster variance after k-means: \n" << c.intracluster_variance() << std::endl;
+
+
 	// launch graphical interface
+	/*
 	Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv, "inf442.td3");
 	Gtk::Window win;
 	win.set_title("TD 3");
@@ -534,11 +685,12 @@ int main(int argc, char **argv)
 	MyArea area(&c);
 	win.add(area);
 	area.show();
-	//------------------------------------------------------------------COMMENTED THIS OPUT BEACUSE IT GTK DOESN'T WORK YET
-	//return app->run(win);
-	
+	 */
+	 //------------------------------------------------------------------COMMENTED THIS OPUT BEACUSE IT GTK DOESN'T WORK YET
+	 //return app->run(win);
 
-	//TODO: REMOVE, random testing to make sure we can access the dataset and print----------------------------------------------------
+
+	 //TODO: REMOVE, random testing to make sure we can access the dataset and print----------------------------------------------------
 	point qpoint(5.0, 5.0, 5.0, 5.0);
 	for (int i = 0; i < nmax; i++)  // Testing the pointCLoud array
 	{
@@ -563,7 +715,10 @@ int main(int argc, char **argv)
 	std::cout << "  |  " << c.get_center(2).coords[0] << "," << c.get_center(2).coords[1] << "," << c.get_center(2).coords[2] << "," << c.get_center(2).coords[3];
 	std::cout << "\n";
 
-	system("pause"); //so the popup display doesn't close instantly
+	//int y;
+	//std::cin >> y;
+	//system("pause"); //so the popup display doesn't close instantly
+	//return 0;
 	//-----------------------------------------------------------------------------------------------------------------------------------
 }
 
@@ -580,37 +735,37 @@ bool MyArea::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
 	double x_max = DBL_MIN;
 	double y_min = DBL_MAX;
 	double y_max = DBL_MIN;
-	for(int i = 0; i < c->get_n(); i++)
+	for (int i = 0; i < c->get_n(); i++)
 	{
-		if(c->get_point(i).coords[x_coord] < x_min)
+		if (c->get_point(i).coords[x_coord] < x_min)
 			x_min = c->get_point(i).coords[x_coord];
-		if(c->get_point(i).coords[x_coord] > x_max)
+		if (c->get_point(i).coords[x_coord] > x_max)
 			x_max = c->get_point(i).coords[x_coord];
-		if(c->get_point(i).coords[y_coord] < y_min)
+		if (c->get_point(i).coords[y_coord] < y_min)
 			y_min = c->get_point(i).coords[y_coord];
-		if(c->get_point(i).coords[y_coord] > y_max)
+		if (c->get_point(i).coords[y_coord] > y_max)
 			y_max = c->get_point(i).coords[y_coord];
 	}
 	// plot all points
-	for(int i = 0; i < c->get_n(); i++)
+	for (int i = 0; i < c->get_n(); i++)
 	{
 		cr->save(); // save current drawing context (opaque black)
 		cr->arc((c->get_point(i).coords[x_coord] - x_min)*width / (x_max - x_min), (c->get_point(i).coords[y_coord] - y_min)*height / (y_max - y_min), 10.0, 0.0, 2.0 * 3.14);// M_PI); // full circle
 		// choose color depending on label
-		switch(c->get_point(i).label)
+		switch (c->get_point(i).label)
 		{
-			case 0:
-				cr->set_source_rgba(1.0, 0.0, 0.0, 0.6); // red, partially translucent
-				break;
-			case 1:
-				cr->set_source_rgba(0.0, 0.0, 0.8, 0.6); // 0.8 blue, partially translucent
-				break;
-			case 2:
-				cr->set_source_rgba(0.0, 1.0, 0.0, 0.6); // green, partially translucent
-				break;
-			default:
-				cr->set_source_rgba(1.0, 1.0, 0.0, 0.6); // yellow, partially translucent
-				break;
+		case 0:
+			cr->set_source_rgba(1.0, 0.0, 0.0, 0.6); // red, partially translucent
+			break;
+		case 1:
+			cr->set_source_rgba(0.0, 0.0, 0.8, 0.6); // 0.8 blue, partially translucent
+			break;
+		case 2:
+			cr->set_source_rgba(0.0, 1.0, 0.0, 0.6); // green, partially translucent
+			break;
+		default:
+			cr->set_source_rgba(1.0, 1.0, 0.0, 0.6); // yellow, partially translucent
+			break;
 		}
 		cr->fill_preserve();
 		cr->restore();  // restore drawing context to opaque black
